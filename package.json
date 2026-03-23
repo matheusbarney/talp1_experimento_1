@@ -1,0 +1,29 @@
+{
+  "name": "talp1_experimento_1",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "client",
+    "server"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev -w server\" \"npm run dev -w client\"",
+    "build": "npm run build -w server && npm run build -w client",
+    "start": "npm run start -w server"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/matheusbarney/talp1_experimento_1.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/matheusbarney/talp1_experimento_1/issues"
+  },
+  "homepage": "https://github.com/matheusbarney/talp1_experimento_1#readme",
+  "description": ""
+}
