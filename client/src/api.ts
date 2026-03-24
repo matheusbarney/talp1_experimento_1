@@ -1,4 +1,4 @@
-import type { Question, QuestionPayload } from "./types";
+import type { Question, QuestionPayload, Test, TestPayload } from "./types";
 
 const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:4000";
 
@@ -42,6 +42,30 @@ export function updateQuestion(id: number, payload: QuestionPayload) {
 
 export function deleteQuestion(id: number) {
   return request<void>(`/questions/${id}`, {
+    method: "DELETE"
+  });
+}
+
+export function fetchTests() {
+  return request<Test[]>("/tests");
+}
+
+export function createTest(payload: TestPayload) {
+  return request<Test>("/tests", {
+    method: "POST",
+    body: JSON.stringify(payload)
+  });
+}
+
+export function updateTest(id: number, payload: TestPayload) {
+  return request<Test>(`/tests/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(payload)
+  });
+}
+
+export function deleteTest(id: number) {
+  return request<void>(`/tests/${id}`, {
     method: "DELETE"
   });
 }

@@ -11,6 +11,7 @@ model Question {
   id           Int           @id @default(autoincrement())
   description  String
   options      Option[]
+  testQuestions TestQuestion[]
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
 }
@@ -23,4 +24,31 @@ model Option {
   question    Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
 
   @@index([questionId])
+}
+
+model Test {
+  id             Int             @id @default(autoincrement())
+  description    String
+  identifierMode IdentifierMode
+  testQuestions  TestQuestion[]
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+}
+
+model TestQuestion {
+  id         Int      @id @default(autoincrement())
+  position   Int
+  testId     Int
+  questionId Int
+  test       Test     @relation(fields: [testId], references: [id], onDelete: Cascade)
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@unique([testId, questionId])
+  @@unique([testId, position])
+  @@index([questionId])
+}
+
+enum IdentifierMode {
+  LETTERS
+  POWERS_OF_TWO
 }

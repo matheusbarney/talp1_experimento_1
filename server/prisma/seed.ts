@@ -9,7 +9,7 @@ async function main() {
     return;
   }
 
-  await prisma.question.create({
+  const questionOne = await prisma.question.create({
     data: {
       description: "Which planet is known as the Red Planet?",
       options: {
@@ -23,7 +23,7 @@ async function main() {
     }
   });
 
-  await prisma.question.create({
+  const questionTwo = await prisma.question.create({
     data: {
       description: "What is 2 + 2?",
       options: {
@@ -31,6 +31,19 @@ async function main() {
           { description: "3", isCorrect: false },
           { description: "4", isCorrect: true },
           { description: "5", isCorrect: false }
+        ]
+      }
+    }
+  });
+
+  await prisma.test.create({
+    data: {
+      description: "Science and Math Basics",
+      identifierMode: "LETTERS",
+      testQuestions: {
+        create: [
+          { questionId: questionOne.id, position: 1 },
+          { questionId: questionTwo.id, position: 2 }
         ]
       }
     }

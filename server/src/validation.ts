@@ -16,3 +16,18 @@ export const questionBodySchema = z
   });
 
 export type QuestionBody = z.infer<typeof questionBodySchema>;
+
+const identifierModeSchema = z.enum(["LETTERS", "POWERS_OF_TWO"]);
+
+export const testBodySchema = z.object({
+  description: z.string().trim().min(1, "Test description is required"),
+  identifierMode: identifierModeSchema,
+  questionIds: z
+    .array(z.number().int().positive("Question id must be a positive integer"))
+    .min(1, "At least 1 question is required")
+    .refine((questionIds) => new Set(questionIds).size === questionIds.length, {
+      message: "Question ids must be unique"
+    })
+});
+
+export type TestBody = z.infer<typeof testBodySchema>;

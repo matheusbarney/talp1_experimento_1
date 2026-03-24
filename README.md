@@ -1,6 +1,6 @@
 # Closed Questions Manager
 
-A small full-stack TypeScript app for managing closed questions.
+A small full-stack TypeScript app for managing closed questions and tests.
 
 Each question has:
 - description
@@ -9,6 +9,11 @@ Each question has:
 Each option has:
 - description
 - isCorrect (boolean)
+
+Each test has:
+- description
+- identifierMode (letters or powers of two)
+- selected questions
 
 ## Tech Stack
 
@@ -65,6 +70,11 @@ npm run build
 - POST /questions
 - PUT /questions/:id
 - DELETE /questions/:id
+- GET /tests
+- GET /tests/:id
+- POST /tests
+- PUT /tests/:id
+- DELETE /tests/:id
 
 ### POST/PUT body example
 
@@ -79,18 +89,34 @@ npm run build
 }
 ```
 
+### Test POST/PUT body example
+
+```json
+{
+  "description": "Midterm Set A",
+  "identifierMode": "LETTERS",
+  "questionIds": [1, 2, 3]
+}
+```
+
 ## Validation Rules
 
 - question description is required
 - at least 2 options are required
 - every option needs a description
 - at least one option must be marked as correct
+- test description is required
+- at least 1 question is required in each test
+- selected question IDs must exist and cannot repeat
 
 ## Scope
 
 Included:
 - CRUD for questions
 - add/remove/update options in a question
+- CRUD for tests
+- select existing questions inside a test
+- configure test question labels as letters or powers of two
 - modern responsive UI
 
 Not included:

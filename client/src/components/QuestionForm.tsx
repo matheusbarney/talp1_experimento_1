@@ -13,7 +13,7 @@ type QuestionFormProps = {
   saving: boolean;
   error: string | null;
   feedback: string | null;
-  onReset: () => void;
+  onClose: () => void;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
   onDescriptionChange: (description: string) => void;
   onAddOption: () => void;
@@ -27,7 +27,7 @@ export function QuestionForm({
   saving,
   error,
   feedback,
-  onReset,
+  onClose,
   onSubmit,
   onDescriptionChange,
   onAddOption,
@@ -38,11 +38,9 @@ export function QuestionForm({
     <section className="panel form-panel">
       <div className="panel-header">
         <h2>{isEditing ? "Edit question" : "Create question"}</h2>
-        {isEditing ? (
-          <button className="secondary" onClick={onReset}>
-            New question
-          </button>
-        ) : null}
+        <button className="secondary" type="button" onClick={onClose}>
+          Close
+        </button>
       </div>
 
       <form onSubmit={onSubmit} className="question-form">

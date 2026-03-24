@@ -53,10 +53,24 @@ body {
   color: var(--muted);
 }
 
-.layout {
+.toolbar {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 1rem;
+}
+
+.page-feedback {
+  margin-bottom: 1rem;
+}
+
+.layout-two-columns {
   display: grid;
-  grid-template-columns: 1.1fr 1.6fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1rem;
+}
+
+.column {
+  min-width: 0;
 }
 
 .panel {
@@ -65,6 +79,10 @@ body {
   border-radius: 18px;
   padding: 1rem;
   box-shadow: 0 10px 24px rgba(9, 30, 66, 0.06);
+}
+
+.list-panel {
+  width: 100%;
 }
 
 .panel-header {
@@ -102,25 +120,17 @@ body {
 }
 
 .question-item {
-  display: grid;
-  grid-template-columns: 1fr auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   gap: 0.5rem;
   border: 1px solid var(--border);
   border-radius: 12px;
-  padding: 0.45rem;
-}
-
-.question-item.selected {
-  border-color: #60a5fa;
-  background: #f7fbff;
+  padding: 0.7rem;
 }
 
 .question-item-content {
   text-align: left;
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  padding: 0.35rem;
   color: inherit;
 }
 
@@ -131,6 +141,11 @@ body {
 
 .question-item-content small {
   color: var(--muted);
+}
+
+.question-item-actions {
+  display: flex;
+  gap: 0.45rem;
 }
 
 .question-form {
@@ -145,7 +160,8 @@ body {
 }
 
 .question-form input,
-.question-form textarea {
+.question-form textarea,
+.question-form select {
   width: 100%;
   border: 1px solid var(--border);
   border-radius: 10px;
@@ -172,6 +188,31 @@ body {
 .options-list {
   display: grid;
   gap: 0.6rem;
+}
+
+.question-pick-list {
+  display: grid;
+  gap: 0.5rem;
+  max-height: 230px;
+  overflow: auto;
+  padding: 0.65rem;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: #fbfcff;
+}
+
+.question-pick-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  padding: 0.35rem;
+  border-radius: 8px;
+  font-weight: 500;
+}
+
+.question-pick-item input {
+  margin-top: 0.2rem;
+  width: auto;
 }
 
 .option-card {
@@ -247,12 +288,40 @@ button:disabled {
   color: var(--muted);
 }
 
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(20, 29, 46, 0.36);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  z-index: 100;
+}
+
+.modal-card {
+  width: min(760px, 100%);
+}
+
+.modal-card .form-panel {
+  margin: 0;
+}
+
 @media (max-width: 940px) {
-  .layout {
+  .layout-two-columns {
     grid-template-columns: 1fr;
   }
 
   .panel {
     border-radius: 14px;
+  }
+
+  .question-item {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .question-item-actions {
+    justify-content: flex-end;
   }
 }

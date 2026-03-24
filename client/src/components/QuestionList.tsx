@@ -3,16 +3,14 @@ import type { Question } from "../types";
 type QuestionListProps = {
   questions: Question[];
   loading: boolean;
-  selectedQuestionId: number | null;
-  onSelect: (question: Question) => void;
+  onEdit: (question: Question) => void;
   onDelete: (questionId: number) => void;
 };
 
 export function QuestionList({
   questions,
   loading,
-  selectedQuestionId,
-  onSelect,
+  onEdit,
   onDelete
 }: QuestionListProps) {
   return (
@@ -27,14 +25,19 @@ export function QuestionList({
 
       <ul className="question-list">
         {questions.map((question) => (
-          <li key={question.id} className={selectedQuestionId === question.id ? "question-item selected" : "question-item"}>
-            <button className="question-item-content" onClick={() => onSelect(question)}>
+          <li key={question.id} className="question-item">
+            <div className="question-item-content">
               <strong>{question.description}</strong>
               <small>{question.options.length} options</small>
-            </button>
-            <button className="danger" onClick={() => onDelete(question.id)}>
-              Delete
-            </button>
+            </div>
+            <div className="question-item-actions">
+              <button className="secondary" onClick={() => onEdit(question)}>
+                Edit
+              </button>
+              <button className="danger" onClick={() => onDelete(question.id)}>
+                Delete
+              </button>
+            </div>
           </li>
         ))}
       </ul>
