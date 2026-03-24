@@ -5,13 +5,16 @@ import {
   createTest,
   deleteQuestion,
   deleteTest,
+  evaluateExamAnswers,
   fetchQuestions,
   fetchTests,
+  generateRandomStudentAnswersCsv,
   generateTestExams,
   updateQuestion,
   updateTest
 } from "./api";
 import type {
+  EvaluationMode,
   GenerateExamsPayload,
   IdentifierMode,
   Option,
@@ -22,6 +25,7 @@ import type {
 } from "./types";
 import { QuestionForm } from "./components/QuestionForm";
 import { QuestionList } from "./components/QuestionList";
+import { ExamEvaluationPanel } from "./components/ExamEvaluationPanel";
 import { ExamGenerationForm } from "./components/ExamGenerationForm";
 import { TestForm } from "./components/TestForm";
 import { TestList } from "./components/TestList";
@@ -92,6 +96,13 @@ function App() {
   const [savingQuestion, setSavingQuestion] = useState(false);
   const [savingTest, setSavingTest] = useState(false);
   const [savingGeneration, setSavingGeneration] = useState(false);
+  const [evaluationMode, setEvaluationMode] = useState<EvaluationMode>("STRINGENT");
+  const [evaluationAnswerSheetFile, setEvaluationAnswerSheetFile] = useState<File | null>(null);
+  const [evaluationStudentAnswersFile, setEvaluationStudentAnswersFile] = useState<File | null>(null);
+  const [randomAnswerSheetFile, setRandomAnswerSheetFile] = useState<File | null>(null);
+  const [randomStudentCount, setRandomStudentCount] = useState(25);
+  const [runningEvaluation, setRunningEvaluation] = useState(false);
+  const [runningRandomGenerator, setRunningRandomGenerator] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [feedback, setFeedback] = useState<string | null>(null);
 
@@ -483,6 +494,82 @@ function App() {
     }
   }
 
+  async function handleEvaluateExams(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    if (!evaluationAnswerSheetFile || !evaluationStudentAnswersFile) {
+      setError("Select both answer sheet and student answers CSV files");
+      return;
+    }
+
+    setRunningEvaluation(true);
+    setError(null);
+    setFeedback(null);
+
+    try {
+      const result = await evaluateExamAnswers(
+        evaluationAnswerSheetFile,
+        evaluationStudentAnswersFile,
+        evaluationMode
+      );
+
+      const url = URL.createObjectURL(result.blob);
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = result.fileName;
+      document.body.append(anchor);
+      anchor.click();
+      anchor.remove();
+      URL.revokeObjectURL(url);
+
+      setFeedback("Classroom score report generated successfully");
+    } catch (requestError) {
+      const message = requestError instanceof Error ? requestError.message : "Could not evaluate exams";
+      setError(message);
+    } finally {
+      setRunningEvaluation(false);
+    }
+  }
+
+  async function handleGenerateRandomAnswers(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    if (!randomAnswerSheetFile) {
+      setError("Select an answer sheet CSV file to generate random answers");
+      return;
+    }
+
+    if (randomStudentCount < 1 || randomStudentCount > 10000) {
+      setError("Random student count must be between 1 and 10000");
+      return;
+    }
+
+    setRunningRandomGenerator(true);
+    setError(null);
+    setFeedback(null);
+
+    try {
+      const result = await generateRandomStudentAnswersCsv(randomAnswerSheetFile, randomStudentCount);
+
+      const url = URL.createObjectURL(result.blob);
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = result.fileName;
+      document.body.append(anchor);
+      anchor.click();
+      anchor.remove();
+      URL.revokeObjectURL(url);
+
+      setFeedback("Random student answers CSV generated successfully");
+    } catch (requestError) {
+      const message =
+        requestError instanceof Error ? requestError.message : "Could not generate random student answers";
+      setError(message);
+    } finally {
+      setRunningRandomGenerator(false);
+    }
+  }
+
   return (
     <main className="page">
       <header className="page-header">
@@ -524,6 +611,25 @@ function App() {
             onGenerate={openGenerateModal}
           />
         </div>
+      </section>
+
+      <section className="tools-section">
+        <ExamEvaluationPanel
+          mode={evaluationMode}
+          answerSheetFileName={evaluationAnswerSheetFile?.name ?? null}
+          studentAnswersFileName={evaluationStudentAnswersFile?.name ?? null}
+          randomAnswerSheetFileName={randomAnswerSheetFile?.name ?? null}
+          randomStudentCount={randomStudentCount}
+          runningEvaluation={runningEvaluation}
+          runningRandomGenerator={runningRandomGenerator}
+          onModeChange={setEvaluationMode}
+          onAnswerSheetChange={setEvaluationAnswerSheetFile}
+          onStudentAnswersChange={setEvaluationStudentAnswersFile}
+          onRandomAnswerSheetChange={setRandomAnswerSheetFile}
+          onRandomStudentCountChange={setRandomStudentCount}
+          onEvaluate={handleEvaluateExams}
+          onGenerateRandomAnswers={handleGenerateRandomAnswers}
+        />
       </section>
 
       {isQuestionModalOpen ? (

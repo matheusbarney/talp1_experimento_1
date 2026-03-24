@@ -1,5 +1,6 @@
 import cors from "cors";
 import express from "express";
+import { examsRouter } from "./exams.router.js";
 import { questionsRouter } from "./questions.router.js";
 import { testsRouter } from "./tests.router.js";
 
@@ -18,6 +19,7 @@ app.get("/health", (_req, res) => {
 
 app.use("/questions", questionsRouter);
 app.use("/tests", testsRouter);
+app.use("/exams", examsRouter);
 
 app.use((err: unknown, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
   console.error(err);

@@ -77,6 +77,8 @@ npm run build
 - PUT /tests/:id
 - DELETE /tests/:id
 - POST /tests/:id/generate-exams
+- POST /exams/evaluate
+- POST /exams/generate-random-answers
 
 ### POST/PUT body example
 
@@ -121,6 +123,10 @@ The endpoint returns a ZIP file containing:
 - one randomized PDF exam per requested copy
 - a CSV answer sheet with each exam number and expected answers
 
+The generated answer sheet CSV includes metadata columns per question:
+- Q1, Q1_OPTIONS, Q2, Q2_OPTIONS, ...
+- Q*_OPTIONS stores all valid labels for that specific generated exam version
+
 ## Validation Rules
 
 - question description is required
@@ -131,6 +137,30 @@ The endpoint returns a ZIP file containing:
 - at least 1 question is required in each test
 - selected question IDs must exist and cannot repeat
 - exam generation requires count, start number and header fields
+- exam evaluation requires two CSV files: answer sheet and student answers
+- random student generation requires an answer sheet CSV and studentCount
+
+## Exam Evaluation CSV Formats
+
+Student answers CSV must include:
+- StudentName
+- CPF
+- ExamNumber
+- Q1..Qn
+
+For answer values:
+- Letters mode: `A+C` (or equivalent separators)
+- Powers-of-two mode: sum value (example: `10` for `2 + 8`)
+
+Evaluation modes:
+- STRINGENT: exact match per question (any mismatch gives 0 for that question)
+- LIBERAL: proportional score per question based on per-option matches against expected selected/unselected choices
+
+`POST /exams/evaluate` returns `classroom_score_report.csv` with per-student scores and class average.
+
+## In-App Testing Helper
+
+`POST /exams/generate-random-answers` creates `random_student_answers.csv` from an answer sheet, with random students and random answer patterns, so you can quickly test evaluation/report generation.
 
 ## Scope
 
@@ -143,6 +173,9 @@ Included:
 - generate N exam PDFs with randomized question and option order
 - include per-exam header/footer and student identification area (Name and CPF)
 - generate CSV answer sheet (letters or powers-of-two sum according to test mode)
+- evaluate exams from answer-sheet + student-answers CSV inputs
+- generate classroom score report CSV using stringent or liberal scoring
+- generate random student answer CSV in-app for evaluation testing
 - modern responsive UI
 
 Not included:

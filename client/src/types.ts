@@ -54,3 +54,5 @@ export type GenerateExamsPayload = {
   startNumber: number;
   header: ExamHeaderPayload;
 };
+
+export type EvaluationMode = "STRINGENT" | "LIBERAL";

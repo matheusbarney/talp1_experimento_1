@@ -240,7 +240,10 @@ export async function generateExamsPackage(testId: number, payload: GenerateExam
   const answerRows: string[][] = [];
   const questionCount = baseQuestions.length;
 
-  const csvHeader = ["ExamNumber", ...Array.from({ length: questionCount }, (_item, index) => `Q${index + 1}`)];
+  const csvHeader = [
+    "ExamNumber",
+    ...Array.from({ length: questionCount }, (_item, index) => [`Q${index + 1}`, `Q${index + 1}_OPTIONS`]).flat()
+  ];
   answerRows.push(csvHeader);
 
   for (let examIndex = 0; examIndex < payload.count; examIndex += 1) {
@@ -254,10 +257,12 @@ export async function generateExamsPackage(testId: number, payload: GenerateExam
 
     for (const question of randomizedQuestions) {
       const labels = question.options.map((_option, optionIndex) => optionLabelByMode(test.identifierMode, optionIndex));
+      const optionsMetadata = labels.join("|");
 
       if (test.identifierMode === "LETTERS") {
         const correctLabels = labels.filter((_label, optionIndex) => question.options[optionIndex].isCorrect);
         answersForExam.push(correctLabels.join("+"));
+        answersForExam.push(optionsMetadata);
       } else {
         let sum = 0;
         for (let optionIndex = 0; optionIndex < question.options.length; optionIndex += 1) {
@@ -266,6 +271,7 @@ export async function generateExamsPackage(testId: number, payload: GenerateExam
           }
         }
         answersForExam.push(String(sum));
+        answersForExam.push(optionsMetadata);
       }
     }
 

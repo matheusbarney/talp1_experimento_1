@@ -1,4 +1,11 @@
-import type { GenerateExamsPayload, Question, QuestionPayload, Test, TestPayload } from "./types";
+import type {
+  EvaluationMode,
+  GenerateExamsPayload,
+  Question,
+  QuestionPayload,
+  Test,
+  TestPayload
+} from "./types";
 
 const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:4000";
 
@@ -87,6 +94,57 @@ export async function generateTestExams(testId: number, payload: GenerateExamsPa
   const disposition = response.headers.get("content-disposition") ?? "";
   const match = disposition.match(/filename="?([^\"]+)"?/i);
   const fileName = match ? match[1] : `test-${testId}-exams.zip`;
+  const blob = await response.blob();
+
+  return { fileName, blob };
+}
+
+export async function evaluateExamAnswers(
+  answerSheetFile: File,
+  studentAnswersFile: File,
+  mode: EvaluationMode
+) {
+  const formData = new FormData();
+  formData.append("answerSheet", answerSheetFile);
+  formData.append("studentAnswers", studentAnswersFile);
+  formData.append("mode", mode);
+
+  const response = await fetch(`${API_URL}/exams/evaluate`, {
+    method: "POST",
+    body: formData
+  });
+
+  if (!response.ok) {
+    const body = await response.json().catch(() => ({ message: "Unknown error" }));
+    throw new Error(body.message ?? "Request failed");
+  }
+
+  const disposition = response.headers.get("content-disposition") ?? "";
+  const match = disposition.match(/filename="?([^\"]+)"?/i);
+  const fileName = match ? match[1] : "classroom_score_report.csv";
+  const blob = await response.blob();
+
+  return { fileName, blob };
+}
+
+export async function generateRandomStudentAnswersCsv(answerSheetFile: File, studentCount: number) {
+  const formData = new FormData();
+  formData.append("answerSheet", answerSheetFile);
+  formData.append("studentCount", String(studentCount));
+
+  const response = await fetch(`${API_URL}/exams/generate-random-answers`, {
+    method: "POST",
+    body: formData
+  });
+
+  if (!response.ok) {
+    const body = await response.json().catch(() => ({ message: "Unknown error" }));
+    throw new Error(body.message ?? "Request failed");
+  }
+
+  const disposition = response.headers.get("content-disposition") ?? "";
+  const match = disposition.match(/filename="?([^\"]+)"?/i);
+  const fileName = match ? match[1] : "random_student_answers.csv";
   const blob = await response.blob();
 
   return { fileName, blob };
