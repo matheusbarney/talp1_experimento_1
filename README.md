@@ -14,6 +14,7 @@ Each test has:
 - description
 - identifierMode (letters or powers of two)
 - selected questions
+- exam package generation (randomized PDFs + CSV answer sheet)
 
 ## Tech Stack
 
@@ -75,6 +76,7 @@ npm run build
 - POST /tests
 - PUT /tests/:id
 - DELETE /tests/:id
+- POST /tests/:id/generate-exams
 
 ### POST/PUT body example
 
@@ -99,6 +101,26 @@ npm run build
 }
 ```
 
+### Generate exams body example
+
+```json
+{
+  "count": 30,
+  "startNumber": 1,
+  "header": {
+    "title": "Midterm Exam",
+    "className": "Math 101",
+    "teacher": "Prof. Silva",
+    "date": "2026-03-24",
+    "additionalInfo": "No calculators"
+  }
+}
+```
+
+The endpoint returns a ZIP file containing:
+- one randomized PDF exam per requested copy
+- a CSV answer sheet with each exam number and expected answers
+
 ## Validation Rules
 
 - question description is required
@@ -108,6 +130,7 @@ npm run build
 - test description is required
 - at least 1 question is required in each test
 - selected question IDs must exist and cannot repeat
+- exam generation requires count, start number and header fields
 
 ## Scope
 
@@ -117,6 +140,9 @@ Included:
 - CRUD for tests
 - select existing questions inside a test
 - configure test question labels as letters or powers of two
+- generate N exam PDFs with randomized question and option order
+- include per-exam header/footer and student identification area (Name and CPF)
+- generate CSV answer sheet (letters or powers-of-two sum according to test mode)
 - modern responsive UI
 
 Not included:

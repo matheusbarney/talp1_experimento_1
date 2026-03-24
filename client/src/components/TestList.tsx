@@ -5,13 +5,14 @@ type TestListProps = {
   loading: boolean;
   onEdit: (test: Test) => void;
   onDelete: (testId: number) => void;
+  onGenerate: (test: Test) => void;
 };
 
 function formatIdentifierMode(mode: Test["identifierMode"]) {
   return mode === "LETTERS" ? "Letters (A, B, C...)" : "Powers of two (1, 2, 4, 8...)";
 }
 
-export function TestList({ tests, loading, onEdit, onDelete }: TestListProps) {
+export function TestList({ tests, loading, onEdit, onDelete, onGenerate }: TestListProps) {
   return (
     <aside className="panel list-panel">
       <div className="panel-header">
@@ -32,6 +33,9 @@ export function TestList({ tests, loading, onEdit, onDelete }: TestListProps) {
               </small>
             </div>
             <div className="question-item-actions">
+              <button className="secondary" onClick={() => onGenerate(test)}>
+                Generate
+              </button>
               <button className="secondary" onClick={() => onEdit(test)}>
                 Edit
               </button>

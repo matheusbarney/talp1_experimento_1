@@ -40,3 +40,17 @@ export type TestPayload = {
   identifierMode: IdentifierMode;
   questionIds: number[];
 };
+
+export type ExamHeaderPayload = {
+  title: string;
+  className: string;
+  teacher: string;
+  date: string;
+  additionalInfo?: string;
+};
+
+export type GenerateExamsPayload = {
+  count: number;
+  startNumber: number;
+  header: ExamHeaderPayload;
+};

@@ -1,7 +1,8 @@
 import { Router } from "express";
 import { ZodError } from "zod";
-import { testBodySchema } from "./validation.js";
+import { generateExamsBodySchema, testBodySchema } from "./validation.js";
 import { createTest, deleteTest, getTestById, listTests, updateTest } from "./tests.service.js";
+import { generateExamsPackage } from "./exam-export.service.js";
 
 export const testsRouter = Router();
 
@@ -93,6 +94,32 @@ testsRouter.delete("/:id", async (req, res, next) => {
     await deleteTest(id);
     res.status(204).send();
   } catch (error) {
+    next(error);
+  }
+});
+
+testsRouter.post("/:id/generate-exams", async (req, res, next) => {
+  try {
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id) || id <= 0) {
+      return res.status(400).json({ message: "Invalid test id" });
+    }
+
+    const payload = generateExamsBodySchema.parse(req.body);
+    const result = await generateExamsPackage(id, payload);
+
+    res.setHeader("Content-Type", "application/zip");
+    res.setHeader("Content-Disposition", `attachment; filename="${result.fileName}"`);
+    res.send(result.buffer);
+  } catch (error) {
+    if (error instanceof ZodError) {
+      return res.status(400).json({ message: "Validation failed", errors: error.flatten() });
+    }
+
+    if (error instanceof Error && (error.message === "Test not found" || error.message === "Test has no questions")) {
+      return res.status(404).json({ message: error.message });
+    }
+
     next(error);
   }
 });

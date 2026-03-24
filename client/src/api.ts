@@ -1,4 +1,4 @@
-import type { Question, QuestionPayload, Test, TestPayload } from "./types";
+import type { GenerateExamsPayload, Question, QuestionPayload, Test, TestPayload } from "./types";
 
 const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:4000";
 
@@ -68,4 +68,26 @@ export function deleteTest(id: number) {
   return request<void>(`/tests/${id}`, {
     method: "DELETE"
   });
+}
+
+export async function generateTestExams(testId: number, payload: GenerateExamsPayload) {
+  const response = await fetch(`${API_URL}/tests/${testId}/generate-exams`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(payload)
+  });
+
+  if (!response.ok) {
+    const body = await response.json().catch(() => ({ message: "Unknown error" }));
+    throw new Error(body.message ?? "Request failed");
+  }
+
+  const disposition = response.headers.get("content-disposition") ?? "";
+  const match = disposition.match(/filename="?([^\"]+)"?/i);
+  const fileName = match ? match[1] : `test-${testId}-exams.zip`;
+  const blob = await response.blob();
+
+  return { fileName, blob };
 }

@@ -19,6 +19,14 @@ export type QuestionBody = z.infer<typeof questionBodySchema>;
 
 const identifierModeSchema = z.enum(["LETTERS", "POWERS_OF_TWO"]);
 
+const examHeaderSchema = z.object({
+  title: z.string().trim().min(1, "Exam title is required"),
+  className: z.string().trim().min(1, "Class name is required"),
+  teacher: z.string().trim().min(1, "Teacher name is required"),
+  date: z.string().trim().min(1, "Date is required"),
+  additionalInfo: z.string().trim().max(240, "Additional info is too long").optional()
+});
+
 export const testBodySchema = z.object({
   description: z.string().trim().min(1, "Test description is required"),
   identifierMode: identifierModeSchema,
@@ -31,3 +39,12 @@ export const testBodySchema = z.object({
 });
 
 export type TestBody = z.infer<typeof testBodySchema>;
+
+export const generateExamsBodySchema = z.object({
+  count: z.number().int().min(1, "At least 1 exam is required").max(500, "The maximum is 500 exams"),
+  startNumber: z.number().int().min(1, "Start number must be positive").default(1),
+  header: examHeaderSchema
+});
+
+export type GenerateExamsBody = z.infer<typeof generateExamsBodySchema>;
+export type IdentifierMode = z.infer<typeof identifierModeSchema>;
