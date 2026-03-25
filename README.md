@@ -63,6 +63,26 @@ npm run dev
 npm run build
 ```
 
+## Acceptance Tests (Cucumber)
+
+Gherkin scenarios are located in:
+- `server/tests/acceptance/features`
+
+Step definition placeholders are located in:
+- `server/tests/acceptance/steps/acceptance.steps.js`
+
+Run acceptance tests:
+
+```bash
+npm run test:acceptance
+```
+
+Run in dry mode (checks mapping without executing implementations):
+
+```bash
+npm run test:acceptance:dry
+```
+
 ## API Endpoints
 
 - GET /health

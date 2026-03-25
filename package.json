@@ -9,7 +9,9 @@
   "scripts": {
     "dev": "concurrently \"npm run dev -w server\" \"npm run dev -w client\"",
     "build": "npm run build -w server && npm run build -w client",
-    "start": "npm run start -w server"
+    "start": "npm run start -w server",
+    "test:acceptance": "npm run test:acceptance -w server",
+    "test:acceptance:dry": "npm run test:acceptance:dry -w server"
   },
   "devDependencies": {
     "concurrently": "^9.1.2"
