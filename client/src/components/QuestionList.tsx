@@ -1,5 +1,6 @@
 import type { Question } from "../types";
 import { ClipLoader } from "react-spinners";
+import { useEffect, useMemo, useState } from "react";
 
 type QuestionListProps = {
   questions: Question[];
@@ -14,6 +15,21 @@ export function QuestionList({
   onEdit,
   onDelete
 }: QuestionListProps) {
+  const pageSize = 6;
+  const [page, setPage] = useState(1);
+
+  const totalPages = Math.max(1, Math.ceil(questions.length / pageSize));
+  const safePage = Math.min(page, totalPages);
+
+  useEffect(() => {
+    setPage((prev) => Math.min(prev, totalPages));
+  }, [totalPages]);
+
+  const pagedQuestions = useMemo(() => {
+    const start = (safePage - 1) * pageSize;
+    return questions.slice(start, start + pageSize);
+  }, [questions, safePage]);
+
   return (
     <aside className="panel list-panel">
       <div className="panel-header">
@@ -29,8 +45,8 @@ export function QuestionList({
       ) : null}
       {!loading && questions.length === 0 ? <p className="muted">No questions yet. Create your first one.</p> : null}
 
-      <ul className="question-list">
-        {questions.map((question) => (
+      <ul className="question-list list-scroll-viewport">
+        {pagedQuestions.map((question) => (
           <li key={question.id} className="question-item">
             <div className="question-item-content">
               <strong>{question.description}</strong>
@@ -47,6 +63,28 @@ export function QuestionList({
           </li>
         ))}
       </ul>
+
+      {totalPages > 1 ? (
+        <div className="pagination-row list-pagination-row">
+          <button
+            className="secondary"
+            type="button"
+            onClick={() => setPage((prev) => Math.max(1, prev - 1))}
+            disabled={safePage === 1}
+          >
+            Previous
+          </button>
+          <span className="pill">Page {safePage} / {totalPages}</span>
+          <button
+            className="secondary"
+            type="button"
+            onClick={() => setPage((prev) => Math.min(totalPages, prev + 1))}
+            disabled={safePage === totalPages}
+          >
+            Next
+          </button>
+        </div>
+      ) : null}
     </aside>
   );
 }

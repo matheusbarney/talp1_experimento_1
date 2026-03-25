@@ -35,10 +35,15 @@ body {
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem 1.5rem;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  overflow: hidden;
 }
 
 .page-header {
-  margin-bottom: 1.25rem;
+  margin-bottom: 0.1rem;
 }
 
 .page-header h1 {
@@ -56,7 +61,7 @@ body {
 .toolbar {
   display: flex;
   justify-content: flex-start;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.5rem;
 }
 
 .page-feedback {
@@ -67,10 +72,15 @@ body {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1.2rem;
+  flex: 1;
+  min-height: 0;
 }
 
 .column {
   min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .tools-section {
@@ -98,6 +108,10 @@ body {
 
 .list-panel {
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
 }
 
 .panel-header {
@@ -133,6 +147,23 @@ body {
   padding: 0;
   display: grid;
   gap: 0.7rem;
+}
+
+.list-scroll-viewport {
+  flex: 1;
+  min-height: 0;
+  max-height: clamp(250px, 42vh, 460px);
+  overflow-y: auto;
+  padding-right: 0.3rem;
+}
+
+.list-scroll-viewport::-webkit-scrollbar {
+  width: 9px;
+}
+
+.list-scroll-viewport::-webkit-scrollbar-thumb {
+  background: #c8d5e6;
+  border-radius: 999px;
 }
 
 .question-item {
@@ -350,6 +381,10 @@ button:disabled {
   gap: 0.55rem;
 }
 
+.list-pagination-row {
+  margin-top: 0.65rem;
+}
+
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -403,8 +438,15 @@ button:disabled {
 }
 
 @media (max-width: 940px) {
+  .page {
+    min-height: auto;
+    overflow: visible;
+    gap: 1rem;
+  }
+
   .layout-two-columns {
     grid-template-columns: 1fr;
+    flex: none;
   }
 
   .tools-grid {
@@ -413,6 +455,14 @@ button:disabled {
 
   .panel {
     border-radius: 16px;
+  }
+
+  .list-panel {
+    height: auto;
+  }
+
+  .list-scroll-viewport {
+    max-height: 330px;
   }
 
   .question-item {
