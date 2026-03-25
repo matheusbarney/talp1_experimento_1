@@ -1,6 +1,6 @@
 # Closed Questions Manager
 
-A small full-stack TypeScript app for managing closed questions and tests.
+A small full-stack TypeScript app for managing closed questions and tests. Created entirely using Copilot Agent (GPT-5.3-Codex), including the README description below. 
 
 Each question has:
 - description
