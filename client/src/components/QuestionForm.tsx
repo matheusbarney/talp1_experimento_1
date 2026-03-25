@@ -1,4 +1,5 @@
-import type { FormEvent } from "react";
+import { useMemo, useState, type FormEvent } from "react";
+import { ClipLoader } from "react-spinners";
 import type { Option } from "../types";
 import { OptionEditor } from "./OptionEditor";
 
@@ -34,6 +35,17 @@ export function QuestionForm({
   onUpdateOption,
   onRemoveOption
 }: QuestionFormProps) {
+  const pageSize = 4;
+  const [page, setPage] = useState(1);
+
+  const totalPages = Math.max(1, Math.ceil(form.options.length / pageSize));
+  const safePage = Math.min(page, totalPages);
+
+  const pagedOptions = useMemo(() => {
+    const start = (safePage - 1) * pageSize;
+    return form.options.slice(start, start + pageSize);
+  }, [form.options, safePage]);
+
   return (
     <section className="panel form-panel">
       <div className="panel-header">
@@ -43,7 +55,7 @@ export function QuestionForm({
         </button>
       </div>
 
-      <form onSubmit={onSubmit} className="question-form">
+      <form onSubmit={onSubmit} className="question-form modal-form-scroll">
         <label>
           Question description
           <textarea
@@ -62,22 +74,48 @@ export function QuestionForm({
         </div>
 
         <div className="options-list">
-          {form.options.map((option, index) => (
+          {pagedOptions.map((option, index) => {
+            const absoluteIndex = (safePage - 1) * pageSize + index;
+            return (
             <OptionEditor
-              key={`option-${index}`}
+              key={`option-${absoluteIndex}`}
               option={option}
-              index={index}
+              index={absoluteIndex}
               disableRemove={form.options.length <= 2}
               onChange={onUpdateOption}
               onRemove={onRemoveOption}
             />
-          ))}
+            );
+          })}
         </div>
 
-        {error ? <p className="alert error">{error}</p> : null}
-        {feedback ? <p className="alert success">{feedback}</p> : null}
+        {totalPages > 1 ? (
+          <div className="pagination-row">
+            <button
+              className="secondary"
+              type="button"
+              onClick={() => setPage((prev) => Math.max(1, prev - 1))}
+              disabled={safePage === 1}
+            >
+              Previous
+            </button>
+            <span className="pill">Page {safePage} / {totalPages}</span>
+            <button
+              className="secondary"
+              type="button"
+              onClick={() => setPage((prev) => Math.min(totalPages, prev + 1))}
+              disabled={safePage === totalPages}
+            >
+              Next
+            </button>
+          </div>
+        ) : null}
+
+        {error ? <p className="visually-hidden">{error}</p> : null}
+        {feedback ? <p className="visually-hidden">{feedback}</p> : null}
 
         <button className="primary" type="submit" disabled={saving}>
+          {saving ? <ClipLoader color="#ffffff" size={16} /> : null}
           {saving ? "Saving..." : isEditing ? "Save changes" : "Create question"}
         </button>
       </form>

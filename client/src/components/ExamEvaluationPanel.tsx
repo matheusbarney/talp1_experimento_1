@@ -1,4 +1,5 @@
 import type { ChangeEvent, FormEvent } from "react";
+import { ClipLoader } from "react-spinners";
 import type { EvaluationMode } from "../types";
 
 type ExamEvaluationPanelProps = {
@@ -73,6 +74,7 @@ export function ExamEvaluationPanel({
           <small className="muted">{studentAnswersFileName ?? "No file selected"}</small>
 
           <button className="primary" type="submit" disabled={runningEvaluation}>
+            {runningEvaluation ? <ClipLoader color="#ffffff" size={16} /> : null}
             {runningEvaluation ? "Evaluating..." : "Generate Classroom Score Report CSV"}
           </button>
         </form>
@@ -106,6 +108,7 @@ export function ExamEvaluationPanel({
           </label>
 
           <button className="primary" type="submit" disabled={runningRandomGenerator}>
+            {runningRandomGenerator ? <ClipLoader color="#ffffff" size={16} /> : null}
             {runningRandomGenerator ? "Generating..." : "Generate Random Student Answers CSV"}
           </button>
         </form>

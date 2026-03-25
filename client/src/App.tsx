@@ -13,7 +13,7 @@ import { useQuestionManager } from "./app/hooks/useQuestionManager";
 import { useTestManager } from "./app/hooks/useTestManager";
 
 function App() {
-  const { error, feedback, setError, setFeedback, clearMessages } = useAppMessages();
+  const { setError, setFeedback, clearMessages } = useAppMessages();
 
   const tests = useTestManager({
     setError,
@@ -51,11 +51,6 @@ function App() {
         <h1>Closed Questions Manager</h1>
         <p>Manage questions and build tests from selected questions.</p>
       </header>
-
-      {feedback ? <p className="alert success page-feedback">{feedback}</p> : null}
-      {error && !questions.isQuestionModalOpen && !tests.isTestModalOpen && !examGeneration.isGenerationModalOpen ? (
-        <p className="alert error page-feedback">{error}</p>
-      ) : null}
 
       <section className="layout-two-columns">
         <div className="column">
@@ -122,7 +117,7 @@ function App() {
               isEditing={questions.isEditingQuestion}
               form={questions.form}
               saving={questions.savingQuestion}
-              error={error}
+              error={null}
               feedback={null}
               onClose={questions.closeQuestionModal}
               onSubmit={questions.submitQuestionForm}
@@ -148,7 +143,7 @@ function App() {
               form={tests.form}
               questions={questions.questions}
               saving={tests.savingTest}
-              error={error}
+              error={null}
               onClose={tests.closeTestModal}
               onSubmit={tests.submitTestForm}
               onDescriptionChange={tests.setTestDescription}
@@ -168,7 +163,7 @@ function App() {
             <ExamGenerationForm
               testName={examGeneration.selectedGenerationTest.description}
               saving={examGeneration.savingGeneration}
-              error={error}
+              error={null}
               form={examGeneration.generationForm}
               onClose={examGeneration.closeGenerateModal}
               onSubmit={examGeneration.submitGenerationForm}

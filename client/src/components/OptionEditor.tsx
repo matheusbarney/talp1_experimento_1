@@ -33,7 +33,7 @@ export function OptionEditor({
           checked={option.isCorrect}
           onChange={(event) => onChange(index, { isCorrect: event.target.checked })}
         />
-        Correct answer
+        <span>Correct answer</span>
       </label>
 
       <button className="danger" type="button" onClick={() => onRemove(index)} disabled={disableRemove}>

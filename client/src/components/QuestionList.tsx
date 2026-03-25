@@ -1,4 +1,5 @@
 import type { Question } from "../types";
+import { ClipLoader } from "react-spinners";
 
 type QuestionListProps = {
   questions: Question[];
@@ -20,7 +21,12 @@ export function QuestionList({
         <span className="pill">{questions.length}</span>
       </div>
 
-      {loading ? <p className="muted">Loading questions...</p> : null}
+      {loading ? (
+        <p className="muted loading-inline">
+          <ClipLoader size={14} color="#0f766e" />
+          Loading questions...
+        </p>
+      ) : null}
       {!loading && questions.length === 0 ? <p className="muted">No questions yet. Create your first one.</p> : null}
 
       <ul className="question-list">

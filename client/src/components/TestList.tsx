@@ -1,4 +1,5 @@
 import type { Test } from "../types";
+import { ClipLoader } from "react-spinners";
 
 type TestListProps = {
   tests: Test[];
@@ -20,7 +21,12 @@ export function TestList({ tests, loading, onEdit, onDelete, onGenerate }: TestL
         <span className="pill">{tests.length}</span>
       </div>
 
-      {loading ? <p className="muted">Loading tests...</p> : null}
+      {loading ? (
+        <p className="muted loading-inline">
+          <ClipLoader size={14} color="#0f766e" />
+          Loading tests...
+        </p>
+      ) : null}
       {!loading && tests.length === 0 ? <p className="muted">No tests yet. Create your first one.</p> : null}
 
       <ul className="question-list">

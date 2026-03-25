@@ -1,4 +1,5 @@
-import type { FormEvent } from "react";
+import { useMemo, useState, type FormEvent } from "react";
+import { ClipLoader } from "react-spinners";
 import type { IdentifierMode, Question } from "../types";
 
 type TestFormState = {
@@ -32,6 +33,17 @@ export function TestForm({
   onIdentifierModeChange,
   onToggleQuestion
 }: TestFormProps) {
+  const pageSize = 6;
+  const [page, setPage] = useState(1);
+
+  const totalPages = Math.max(1, Math.ceil(questions.length / pageSize));
+  const safePage = Math.min(page, totalPages);
+
+  const pagedQuestions = useMemo(() => {
+    const start = (safePage - 1) * pageSize;
+    return questions.slice(start, start + pageSize);
+  }, [questions, safePage]);
+
   return (
     <section className="panel form-panel">
       <div className="panel-header">
@@ -41,7 +53,7 @@ export function TestForm({
         </button>
       </div>
 
-      <form onSubmit={onSubmit} className="question-form">
+      <form onSubmit={onSubmit} className="question-form modal-form-scroll">
         <label>
           Test description
           <textarea
@@ -71,8 +83,9 @@ export function TestForm({
         {questions.length === 0 ? (
           <p className="muted">Create questions first, then you can include them in a test.</p>
         ) : (
+          <>
           <div className="question-pick-list">
-            {questions.map((question) => {
+            {pagedQuestions.map((question) => {
               const isChecked = form.questionIds.includes(question.id);
               return (
                 <label className="question-pick-item" key={question.id}>
@@ -86,11 +99,34 @@ export function TestForm({
               );
             })}
           </div>
+          {totalPages > 1 ? (
+            <div className="pagination-row">
+              <button
+                className="secondary"
+                type="button"
+                onClick={() => setPage((prev) => Math.max(1, prev - 1))}
+                disabled={safePage === 1}
+              >
+                Previous
+              </button>
+              <span className="pill">Page {safePage} / {totalPages}</span>
+              <button
+                className="secondary"
+                type="button"
+                onClick={() => setPage((prev) => Math.min(totalPages, prev + 1))}
+                disabled={safePage === totalPages}
+              >
+                Next
+              </button>
+            </div>
+          ) : null}
+          </>
         )}
 
-        {error ? <p className="alert error">{error}</p> : null}
+        {error ? <p className="visually-hidden">{error}</p> : null}
 
         <button className="primary" type="submit" disabled={saving || questions.length === 0}>
+          {saving ? <ClipLoader color="#ffffff" size={16} /> : null}
           {saving ? "Saving..." : isEditing ? "Save changes" : "Create test"}
         </button>
       </form>

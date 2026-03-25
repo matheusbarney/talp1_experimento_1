@@ -1,4 +1,5 @@
 import type { FormEvent } from "react";
+import { ClipLoader } from "react-spinners";
 
 type GenerationFormState = {
   count: number;
@@ -40,7 +41,7 @@ export function ExamGenerationForm({
 
       <p className="muted">Test: {testName}</p>
 
-      <form onSubmit={onSubmit} className="question-form">
+      <form onSubmit={onSubmit} className="question-form modal-form-scroll">
         <label>
           Number of exam PDFs
           <input
@@ -91,9 +92,10 @@ export function ExamGenerationForm({
           />
         </label>
 
-        {error ? <p className="alert error">{error}</p> : null}
+        {error ? <p className="visually-hidden">{error}</p> : null}
 
         <button className="primary" type="submit" disabled={saving}>
+          {saving ? <ClipLoader color="#ffffff" size={16} /> : null}
           {saving ? "Generating..." : "Generate PDFs + CSV"}
         </button>
       </form>
