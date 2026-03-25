@@ -9,6 +9,7 @@
   "scripts": {
     "dev": "concurrently \"npm run dev -w server\" \"npm run dev -w client\"",
     "build": "npm run build -w server && npm run build -w client",
+    "postinstall": "npm run prisma:generate -w server",
     "start": "npm run start -w server",
     "test:acceptance": "npm run test:acceptance -w server",
     "test:acceptance:dry": "npm run test:acceptance:dry -w server",
