@@ -9,6 +9,7 @@
     "start": "node dist/index.js",
     "test:acceptance": "cucumber-js \"tests/acceptance/features/**/*.feature\" --import \"tests/acceptance/steps/**/*.js\" --format progress",
     "test:acceptance:dry": "cucumber-js \"tests/acceptance/features/**/*.feature\" --import \"tests/acceptance/steps/**/*.js\" --format progress --dry-run",
+    "test:acceptance:question": "cucumber-js \"tests/acceptance/features/**/*.feature\" --import \"tests/acceptance/steps/**/*.js\" --format progress --tags \"@question_creation_validation\"",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev --name init",
     "prisma:seed": "tsx prisma/seed.ts"

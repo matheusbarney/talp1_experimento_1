@@ -1,11 +1,34 @@
 import { Given, Then, When } from "@cucumber/cucumber";
+import assert from "node:assert/strict";
+
+const API_URL = process.env.ACCEPTANCE_API_URL ?? "http://localhost:4000";
+
+const state = {
+  lastResponse: null,
+  lastBody: null
+};
+
+function parseBooleanFlag(value) {
+  return String(value).trim().toLowerCase() === "true";
+}
+
+async function safeJson(response) {
+  try {
+    return await response.json();
+  } catch {
+    return null;
+  }
+}
 
 function pending(stepName) {
   throw new Error(`Step not implemented yet: ${stepName}`);
 }
 
-Given("the API is running", () => {
-  pending("the API is running");
+Given("the API is running", async () => {
+  const response = await fetch(`${API_URL}/health`);
+  assert.equal(response.status, 200, "Expected GET /health to return 200");
+  const body = await safeJson(response);
+  assert.equal(body?.ok, true, "Expected /health response body to contain { ok: true }");
 });
 
 Given("at least {int} questions exist", () => {
@@ -36,8 +59,24 @@ Given("an answer sheet csv without Q1_OPTIONS exists", () => {
   pending("an answer sheet csv without Q1_OPTIONS exists");
 });
 
-When("I create a question with description {string} and options:", () => {
-  pending("I create a question with description {string} and options:");
+When("I create a question with description {string} and options:", async (description, dataTable) => {
+  const options = dataTable.hashes().map((row) => ({
+    description: row.description,
+    isCorrect: parseBooleanFlag(row.isCorrect)
+  }));
+
+  const payload = { description, options };
+
+  const response = await fetch(`${API_URL}/questions`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(payload)
+  });
+
+  state.lastResponse = response;
+  state.lastBody = await safeJson(response);
 });
 
 When("I update the question description to {string}", () => {
@@ -77,11 +116,15 @@ When("I generate random student answers with student count {int}", () => {
 });
 
 Then("the question is created successfully", () => {
-  pending("the question is created successfully");
+  assert.ok(state.lastResponse, "Expected a previous API response");
+  assert.equal(state.lastResponse.status, 201, "Expected POST /questions to return 201");
+  assert.equal(typeof state.lastBody?.id, "number", "Expected created question to include numeric id");
 });
 
-Then("the created question has {int} options", () => {
-  pending("the created question has {int} options");
+Then("the created question has {int} options", (optionCount) => {
+  assert.ok(state.lastBody, "Expected created question response body");
+  assert.ok(Array.isArray(state.lastBody.options), "Expected created question to include options array");
+  assert.equal(state.lastBody.options.length, optionCount);
 });
 
 Then("the question is updated successfully", () => {
@@ -136,8 +179,22 @@ Then("the csv includes columns {string}, {string}, {string}, and {string}", () =
   pending("the csv includes columns {string}, {string}, {string}, and {string}");
 });
 
-Then("the request is rejected with validation error {string}", () => {
-  pending("the request is rejected with validation error {string}");
+Then("the request is rejected with validation error {string}", (expectedMessage) => {
+  assert.ok(state.lastResponse, "Expected a previous API response");
+  assert.equal(state.lastResponse.status, 400, "Expected request to fail with status 400");
+
+  const fieldErrors = state.lastBody?.errors?.fieldErrors ?? {};
+  const formErrors = state.lastBody?.errors?.formErrors ?? [];
+
+  const allMessages = [
+    ...Object.values(fieldErrors).flatMap((value) => (Array.isArray(value) ? value : [])),
+    ...formErrors
+  ];
+
+  assert.ok(
+    allMessages.includes(expectedMessage),
+    `Expected validation error '${expectedMessage}', got: ${JSON.stringify(allMessages)}`
+  );
 });
 
 Then("the request fails with message {string}", () => {

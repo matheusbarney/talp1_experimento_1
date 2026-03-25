@@ -6,6 +6,7 @@ Feature: Question management
   Background:
     Given the API is running
 
+  @question_creation_validation
   Scenario: Create a valid question
     When I create a question with description "Which number is prime?" and options:
       | description | isCorrect |
@@ -15,6 +16,7 @@ Feature: Question management
     Then the question is created successfully
     And the created question has 3 options
 
+  @question_creation_validation
   Scenario: Reject a question without a correct option
     When I create a question with description "Pick the right statement" and options:
       | description | isCorrect |
