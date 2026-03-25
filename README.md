@@ -77,6 +77,15 @@ Run acceptance tests:
 npm run test:acceptance
 ```
 
+Current acceptance coverage (fully implemented, API-level):
+- question creation, validation, update, and deletion
+- test creation, validation, and deletion
+- exam package generation (pdf copies + answer sheet csv)
+- answer-sheet metadata verification for evaluation support
+- exam evaluation in `STRINGENT` and `LIBERAL` modes
+- random student-answer csv generation
+- validation failure for liberal evaluation without `Q*_OPTIONS`
+
 Run in dry mode (checks mapping without executing implementations):
 
 ```bash
